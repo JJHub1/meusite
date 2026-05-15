@@ -130,14 +130,6 @@ html,body{height:100%;background:#1a1a1a;display:flex;align-items:center;justify
     <div class="live-dot"></div>
   </div>
 
-  <!-- LOGIN OVERLAY -->
-  <div id="login-overlay" class="login-overlay" style="display:none">
-    <div class="login-card">
-      <h2>Conectar Google</h2>
-      <p>Authorize para acessar dados da planilha</p>
-      <button class="login-btn" onclick="initGoogleAuth()">Fazer Login</button>
-    </div>
-  </div>
 
   <!-- CONTENT -->
   <div class="content" id="content-area">
@@ -228,75 +220,25 @@ html,body{height:100%;background:#1a1a1a;display:flex;align-items:center;justify
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- Google OAuth Div -->
-<div id="g_id_onload"
-     data-client_id="826536766105-c3q0j863kgr6ekekgn8nc3jtpp5j71pt.apps.googleusercontent.com"
-     data-callback="handleCredentialResponse">
-</div>
 
 <script>
 const SHEET_ID = '1gUEdtWTmILiaZjsOm4qkbNMcGCzUFRR8kosXHDwiQUA';
 const SHEET_NAME = 'monitoramento';
 let DADOS = [], FILTERED = [], STATUS_FILTER = '';
-let accessToken = null;
 
 // ===== GOOGLE AUTH =====
 window.onload = function() {
-  checkIfLoggedIn();
+  carregarDados();
   updateTime();
   setInterval(updateTime, 1000);
 };
 
-function checkIfLoggedIn() {
-  accessToken = sessionStorage.getItem('google_access_token');
-  if (!accessToken) {
-    document.getElementById('login-overlay').style.display = 'flex';
-  } else {
-    document.getElementById('login-overlay').style.display = 'none';
-    carregarDados();
-  }
-}
-
-function initGoogleAuth() {
-  const clientId = '826536766105-c3q0j863kgr6ekekgn8nc3jtpp5j71pt.apps.googleusercontent.com';
-  const scope = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-  const redirectUri = 'https://jjhub1.github.io/meusite/';
-  
-  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
-    `client_id=${clientId}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&response_type=token` +
-    `&scope=${encodeURIComponent(scope)}`;
-  
-  window.location.href = authUrl;
-}
-
-function handleTokenFromURL() {
-  const hash = window.location.hash;
-  if (hash.includes('access_token')) {
-    const params = new URLSearchParams(hash.substring(1));
-    accessToken = params.get('access_token');
-    sessionStorage.setItem('google_access_token', accessToken);
-    window.location.hash = '';
-    carregarDados();
-  }
-}
-
-handleTokenFromURL();
-
 // ===== CARREGAR DADOS =====
+  // SUBSTITUIR a função carregarDados inteira por:
 async function carregarDados() {
-  if (!accessToken) {
-    showToast('⚠ Não autenticado');
-    return;
-  }
-
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=AIzaSyDmCAK6H6j3hHN_5QsZkCOALjyPKx0b3Lk`;
-  
   try {
-    const response = await fetch(url, {
-      headers: { 'Authorization': `Bearer ${accessToken}` }
-    });
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${SHEET_NAME}?key=AIzaSyDmCAK6H6j3hHN_5QsZkCOALjyPKx0b3Lk`;
+    const response = await fetch(url);
 
     if (!response.ok) throw new Error('Erro ao carregar dados');
     
@@ -308,7 +250,6 @@ async function carregarDados() {
       return;
     }
 
-    const headers = rows[0];
     DADOS = rows.slice(1).map(row => ({
       id: row[0] || '',
       empresa: row[1] || '',
