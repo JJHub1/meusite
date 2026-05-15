@@ -244,7 +244,6 @@ html,body{height:100%;background:#1a1a1a;display:flex;align-items:center;justify
 <script>
 const SHEET_ID = '1gUEdfWTmlLiaZjsOm4qkbNMcGCzUFRR8kosXHDwiQUA';
 const SHEET_NAME = 'monitoramento';
-const SENHA_CORRETA = '123';
 let DADOS = [], FILTERED = [], STATUS_FILTER = '';
 
 // ===== SENHA =====
@@ -269,15 +268,19 @@ function verificarSenha() {
 
 function aplicarPerfil() {
   const perfil = PERFIL || sessionStorage.getItem('autenticado');
+  const btnPropostas = document.querySelectorAll('.bn-item')[1];
+  const btnPlanilha = document.querySelectorAll('.bn-item')[2];
+  const btnAdmin = document.querySelectorAll('.bn-item')[3];
+
   if (perfil === 'monitor') {
-    document.querySelector('[onclick*="planilha"]').style.display = 'none';
-    document.querySelector('[onclick*="propostas"]').style.display = 'none';
-    document.querySelector('[onclick*="admin"]').style.display = 'none';
+    btnPropostas.style.display = 'none';
+    btnPlanilha.style.display = 'none';
+    btnAdmin.style.display = 'none';
   } else if (perfil === 'completo') {
-    document.querySelector('[onclick*="propostas"]').style.display = 'none';
-    document.querySelector('[onclick*="admin"]').style.display = 'none';
+    btnPropostas.style.display = 'none';
+    btnAdmin.style.display = 'none';
   }
-}
+}clear
 
 window.onload = function() {
   const autenticado = sessionStorage.getItem('autenticado');
@@ -287,22 +290,6 @@ window.onload = function() {
     PERFIL = autenticado;
     aplicarPerfil();
   }
-  carregarDados();
-  updateTime();
-  setInterval(updateTime, 1000);
-  setInterval(carregarDados, 30000);
-};
-
-// ===== INIT =====
-window.onload = function() {
-  // Verificar autenticação
-  if (sessionStorage.getItem('autenticado') !== 'sim') {
-    document.getElementById('senha-overlay').style.display = 'flex';
-    setTimeout(() => document.getElementById('senha-input').focus(), 100);
-  } else {
-    document.getElementById('senha-overlay').style.display = 'none';
-  }
-
   carregarDados();
   updateTime();
   setInterval(updateTime, 1000);
