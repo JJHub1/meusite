@@ -248,24 +248,48 @@ const SENHA_CORRETA = '123';
 let DADOS = [], FILTERED = [], STATUS_FILTER = '';
 
 // ===== SENHA =====
-function verificarSenha() {
-  const input = document.getElementById('senha-input');
-  const erro = document.getElementById('senha-erro');
-  const overlay = document.getElementById('senha-overlay');
+let PERFIL = '';
 
-  if (input.value === SENHA_CORRETA) {
-    sessionStorage.setItem('autenticado', 'sim');
-    overlay.style.opacity = '0';
-    overlay.style.transition = 'opacity 0.4s ease';
-    setTimeout(() => overlay.style.display = 'none', 400);
-    erro.textContent = '';
+function verificarSenha() {
+  const senha = document.getElementById('senha-input').value;
+  if (senha === '123') {
+    PERFIL = 'monitor';
+    sessionStorage.setItem('autenticado', 'monitor');
+    aplicarPerfil();
+    document.getElementById('senha-overlay').style.display = 'none';
+  } else if (senha === '456') {
+    PERFIL = 'completo';
+    sessionStorage.setItem('autenticado', 'completo');
+    aplicarPerfil();
+    document.getElementById('senha-overlay').style.display = 'none';
   } else {
-    erro.textContent = 'Senha incorreta. Tente novamente.';
-    input.classList.add('erro');
-    input.value = '';
-    setTimeout(() => input.classList.remove('erro'), 400);
+    document.getElementById('senha-erro').textContent = 'Senha incorreta';
   }
 }
+
+function aplicarPerfil() {
+  const perfil = PERFIL || sessionStorage.getItem('autenticado');
+  if (perfil === 'monitor') {
+    document.querySelector('[onclick*="planilha"]') && 
+      (document.querySelector('[onclick*="planilha"]').style.display = 'none');
+    document.querySelector('[onclick*="propostas"]').style.display = 'none';
+    document.querySelector('[onclick*="admin"]').style.display = 'none';
+  }
+}
+
+window.onload = function() {
+  const autenticado = sessionStorage.getItem('autenticado');
+  if (!autenticado) {
+    document.getElementById('senha-overlay').style.display = 'flex';
+  } else {
+    PERFIL = autenticado;
+    aplicarPerfil();
+  }
+  carregarDados();
+  updateTime();
+  setInterval(updateTime, 1000);
+  setInterval(carregarDados, 30000);
+};
 
 // ===== INIT =====
 window.onload = function() {
