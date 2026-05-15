@@ -270,8 +270,10 @@ function verificarSenha() {
 function aplicarPerfil() {
   const perfil = PERFIL || sessionStorage.getItem('autenticado');
   if (perfil === 'monitor') {
-    document.querySelector('[onclick*="planilha"]') && 
-      (document.querySelector('[onclick*="planilha"]').style.display = 'none');
+    document.querySelector('[onclick*="planilha"]').style.display = 'none';
+    document.querySelector('[onclick*="propostas"]').style.display = 'none';
+    document.querySelector('[onclick*="admin"]').style.display = 'none';
+  } else if (perfil === 'completo') {
     document.querySelector('[onclick*="propostas"]').style.display = 'none';
     document.querySelector('[onclick*="admin"]').style.display = 'none';
   }
